@@ -127,9 +127,9 @@ class Win32_WlanApi:
 
     def WlanEnumInterfaces(self):
         func_ref = wlanapi.WlanEnumInterfaces
-        func_ref.argtypes = [HANDLE, ct.c_void_p, ct.POINTER(WLAN_INTERFACE_INFO_LIST)]
+        func_ref.argtypes = [HANDLE, ct.c_void_p, ct.POINTER(ct.POINTER(WLAN_INTERFACE_INFO_LIST))]
         func_ref.restype = DWORD
-        intf_list = WLAN_INTERFACE_INFO_LIST()
+        intf_list = ct.pointer(WLAN_INTERFACE_INFO_LIST())
         res = func_ref(self._handle, None, ct.byref(intf_list))
         if res != ERROR_SUCCESS:
             raise Exception("Error enumerating interfaces")
