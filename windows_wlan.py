@@ -13,6 +13,12 @@ class GUID(ct.Structure):
         ("Data4", BYTE * 8)
     ]
 
+    def __str__(self):
+        return "{:04x}{:02x}{:02x}{:08x}".format(
+            self.Data1, self.Data2, self.Data3, int("".join([hex(x)[2:] for x in self.Data4]), 16)
+        )
+
+
 class WLAN_CONNECTION_MODE(Enum):
     wlan_connection_mode_profile = 0,
     wlan_connection_mode_temporary_profile = 1
