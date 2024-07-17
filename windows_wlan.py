@@ -14,8 +14,8 @@ class GUID(ct.Structure):
     ]
 
     def __str__(self):
-        return "{:04x}{:02x}{:02x}{:08x}".format(
-            self.Data1, self.Data2, self.Data3, int("".join([hex(x)[2:] for x in self.Data4]), 16)
+        return "{:04x}-{:02x}-{:02x}{}{}{}{}{}{}{}{}".format(
+            self.Data1, self.Data2, self.Data3, *[x for x in self.Data4]
         )
 
 
