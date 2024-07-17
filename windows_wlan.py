@@ -2,6 +2,7 @@ import ctypes as ct
 from ctypes.wintypes import DWORD, HANDLE, WORD, BOOLEAN, BYTE, WCHAR, UINT
 from enum import Enum
 
+wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
 ERROR_SUCCESS = 0
 
 class GUID(ct.Structure):
@@ -81,7 +82,6 @@ class Win32_WlanApi:
 
     def __init__(self):
         self._handle = self.WlanOpenHandle()
-        self._wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
 
     def WlanOpenHandle(self):
         """
@@ -92,7 +92,7 @@ class Win32_WlanApi:
         [Out] PHANDLE phClientHandle
         )
         """
-        func_ref = self._wlanapi.WlanOpenHandle
+        func_ref = wlanapi.WlanOpenHandle
         func_ref.argtypes = [DWORD, ct.c_void_p, ct.POINTER(DWORD), ct.POINTER(HANDLE)]  #func argument types 
         func_ref.restype = DWORD  #func return type
         negotiated_ver = DWORD()  #dword holder for pdwNegotiatedVersion reference
@@ -111,7 +111,7 @@ class Win32_WlanApi:
         [Reserved] PVOID pReserved
         )
         """
-        func_ref = self._wlanapi.WlanCloseHandle
+        func_ref = wlanapi.WlanCloseHandle
         func_ref.argtypes = [HANDLE, ct.c_void_p]
         func_ref.restype = DWORD
         res = func_ref(self._handle, None)
@@ -120,11 +120,11 @@ class Win32_WlanApi:
         return res
 
     def WlanEnumInterfaces(self):
-        func_ref = self._wlanapi.WlanEnumInterfaces
-        func_ref.argtypes = [HANDLE, ct.c_void_p, ct.POINTER(ct.POINTER(WLAN_INTERFACE_INFO_LIST))]
+        func_ref = wlanapi.WlanEnumInterfaces
+        func_ref.argtypes = [HANDLE, ct.c_void_p, ct.POINTER(WLAN_INTERFACE_INFO_LIST)]
         func_ref.restype = DWORD
-        intf_list = ct.pointer(WLAN_INTERFACE_INFO_LIST())
+        intf_list = WLAN_INTERFACE_INFO_LIST()
         res = func_ref(self._handle, None, ct.byref(intf_list))
         if res != ERROR_SUCCESS:
             raise Exception("Error enumerating interfaces")
-        return res
+        return intf_list
