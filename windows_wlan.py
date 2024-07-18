@@ -216,6 +216,15 @@ class WLAN_ASSOCIATION_ATTRIBUTES(ct.Structure):
         ("ulTxRate", ULONG)
     ]
 
+class WLAN_QOS_CAPABILITIES(ct.Structure):
+    _fields_ = [
+        ("bMSCSSupported", BOOL),
+        ("bDSCPToUPMappingSupported", BOOL),
+        ("bSCSSupported", BOOL),
+        ("bDSCPPolicySupported", BOOL)
+    ]
+
+
 class Win32_WlanApi:
 
     def __init__(self):
