@@ -4,6 +4,7 @@ from enum import Enum
 
 wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
 ERROR_SUCCESS = 0
+WLAN_MAX_NAME_LENGTH = 256
 
 class GUID(ct.Structure):
     _fields_ = [
@@ -88,6 +89,18 @@ class WLAN_INTERFACE_INFO_LIST(ct.Structure):
         ("InterfaceInfo", WLAN_INTERFACE_INFO * 1)
     ]
 
+class WLAN_AVAILABLE_NETWORK(ct.Structure):
+    _fields_ = [
+        ("strProfileName")
+    ]
+
+class WLAN_AVAILABLE_NETWORK_LIST(ct.Structure):
+    _fields_ = [
+        ("dwNumberOfItems", DWORD),
+        ("dwIndex", DWORD),
+
+    ]
+
 
 class Win32_WlanApi:
 
@@ -139,3 +152,6 @@ class Win32_WlanApi:
         if res != ERROR_SUCCESS:
             raise Exception("Error enumerating interfaces")
         return intf_list
+
+    def WlanGetAvailableNetworkList(self):
+        func_ref = wlanapi.WlanGetAvailableNetworkList
