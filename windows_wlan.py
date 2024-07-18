@@ -199,14 +199,6 @@ class Win32_WlanApi:
         self._handle = self.WlanOpenHandle()
         self._guid = None
         
-    @property
-    def guid(self):
-        return self._guid
-    
-    @property.setter
-    def guid(self, val):
-        self._guid = val
-
     def WlanOpenHandle(self):
         """
         DWORD WlanOpenHandle(
@@ -251,7 +243,7 @@ class Win32_WlanApi:
         res = func_ref(self._handle, None, ct.byref(intf_list))
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error enumerating interfaces")
-        self.guid = intf_list[0].InterfaceInfo[0].InterfaceGuid
+        self._guid = intf_list[0].InterfaceInfo[0].InterfaceGuid
         return intf_list
 
     def WlanGetAvailableNetworkList(self):
