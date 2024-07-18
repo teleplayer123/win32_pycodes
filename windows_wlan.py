@@ -38,6 +38,14 @@ WLAN_CONNECTION_MODE = {
     "wlan_connection_mode_invalid": 5
 }
 
+WLAN_OPCODE_VALUE_TYPE_T = UINT
+WLAN_OPCODE_VALUE_TYPE = {
+    "wlan_opcode_value_type_query_only": 0,
+    "wlan_opcode_value_type_set_by_group_policy": 1,
+    "wlan_opcode_value_type_set_by_user": 2,
+    "wlan_opcode_value_type_invalid": 3
+}
+
 WLAN_INTF_OPCODE_T = UINT
 WLAN_INTF_OPCODE = {
     "wlan_intf_opcode_autoconf_start": 0,
@@ -224,6 +232,21 @@ class WLAN_QOS_CAPABILITIES(ct.Structure):
         ("bDSCPPolicySupported", BOOL)
     ]
 
+class WLAN_CONNECTION_QOS_INFO(ct.Structure):
+    _fields_ = [
+        ("peerCapabilities", WLAN_QOS_CAPABILITIES),
+        ("bMSCSConfigured", BOOL),
+        ("bDSCPToUPMappingConfigured", BOOL),
+        ("ulNumConfiguredSCSStreams", ULONG),
+        ("ulNumConfiguredDSCPPolicies", ULONG)
+    ]
+
+class WLAN_QOS_INFO(ct.Structure):
+    _fields_ = [
+        ("interfaceCapabilities", WLAN_QOS_CAPABILITIES),
+        ("bConnected", BOOL),
+        ("connectionQoSInfo", WLAN_CONNECTION_QOS_INFO)
+    ]
 
 class Win32_WlanApi:
 
@@ -288,3 +311,9 @@ class Win32_WlanApi:
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error getting available networks")
         return networks
+    
+    def WlanQueryInterface(self, opcode):
+        func_ref = wlanapi.WlanQueryInterface
+        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), PVOID, ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
+        func_ref.restype = DWORD
+        
