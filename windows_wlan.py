@@ -7,6 +7,8 @@ ERROR_SUCCESS = 0
 WLAN_MAX_NAME_LENGTH = 256
 DOT11_SSID_MAX_LENGTH = 32
 WLAN_MAX_PHY_TYPE_NUMBER = 8
+PVOID = ct.c_void_p
+WIN32_CHECK_ERROR = lambda e: e != ERROR_SUCCESS
 
 class GUID(ct.Structure):
     _fields_ = [
@@ -177,6 +179,12 @@ class WLAN_AVAILABLE_NETWORK(ct.Structure):
         ("dwReserved", DWORD)
     ]
 
+    def dwFlags(self):
+        return {
+            "WLAN_AVAILABLE_NETWORK_INCLUDE_ALL_ADHOC_PROFILES": 0x00000001,
+            "WLAN_AVAILABLE_NETWORK_INCLUDE_ALL_MANUAL_HIDDEN_PROFILES": 0x00000002
+        }
+
 class WLAN_AVAILABLE_NETWORK_LIST(ct.Structure):
     _fields_ = [
         ("dwNumberOfItems", DWORD),
@@ -189,6 +197,15 @@ class Win32_WlanApi:
 
     def __init__(self):
         self._handle = self.WlanOpenHandle()
+        self._guid = None
+        
+    @property
+    def guid(self):
+        return self._guid
+    
+    @property.setter
+    def guid(self, val):
+        self._guid = val
 
     def WlanOpenHandle(self):
         """
@@ -200,14 +217,14 @@ class Win32_WlanApi:
         )
         """
         func_ref = wlanapi.WlanOpenHandle
-        func_ref.argtypes = [DWORD, ct.c_void_p, ct.POINTER(DWORD), ct.POINTER(HANDLE)]  #func argument types 
+        func_ref.argtypes = [DWORD, PVOID, ct.POINTER(DWORD), ct.POINTER(HANDLE)]  #func argument types 
         func_ref.restype = DWORD  #func return type
         negotiated_ver = DWORD()  #dword holder for pdwNegotiatedVersion reference
         client_handle = HANDLE()  #handle holder for client handle reference
         client_ver = 2  #predefined value client version for newer windows versions
         p_reserved = None  #void variable for reserved param
         res = func_ref(client_ver, p_reserved, ct.byref(negotiated_ver), ct.byref(client_handle))  #byref() used for [Out] params that will be assigned value
-        if res != ERROR_SUCCESS:
+        if WIN32_CHECK_ERROR(res):
             raise Exception("Error trying to open wlan handle")
         return client_handle
 
@@ -219,22 +236,30 @@ class Win32_WlanApi:
         )
         """
         func_ref = wlanapi.WlanCloseHandle
-        func_ref.argtypes = [HANDLE, ct.c_void_p]
+        func_ref.argtypes = [HANDLE, PVOID]
         func_ref.restype = DWORD
         res = func_ref(self._handle, None)
-        if res != ERROR_SUCCESS:
+        if WIN32_CHECK_ERROR(res):
             raise Exception("Error closing wlan handle")
         return res
 
     def WlanEnumInterfaces(self):
         func_ref = wlanapi.WlanEnumInterfaces
-        func_ref.argtypes = [HANDLE, ct.c_void_p, ct.POINTER(ct.POINTER(WLAN_INTERFACE_INFO_LIST))]
+        func_ref.argtypes = [HANDLE, PVOID, ct.POINTER(ct.POINTER(WLAN_INTERFACE_INFO_LIST))]
         func_ref.restype = DWORD
         intf_list = ct.pointer(WLAN_INTERFACE_INFO_LIST())
         res = func_ref(self._handle, None, ct.byref(intf_list))
-        if res != ERROR_SUCCESS:
+        if WIN32_CHECK_ERROR(res):
             raise Exception("Error enumerating interfaces")
+        self.guid = intf_list[0].InterfaceInfo[0].InterfaceGuid
         return intf_list
 
     def WlanGetAvailableNetworkList(self):
         func_ref = wlanapi.WlanGetAvailableNetworkList
+        func_ref.argtypes = [HANDLE, GUID, DWORD, PVOID, ct.POINTER(ct.POINTER(WLAN_AVAILABLE_NETWORK_LIST))]
+        func_ref.restype = DWORD
+        networks = ct.pointer(WLAN_AVAILABLE_NETWORK_LIST())
+        res = func_ref(self._handle, self.guid, None, ct.byref(networks))
+        if WIN32_CHECK_ERROR(res):
+            raise Exception("Error getting available networks")
+        return networks
