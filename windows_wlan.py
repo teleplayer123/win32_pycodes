@@ -251,7 +251,8 @@ class Win32_WlanApi:
         func_ref.argtypes = [HANDLE, GUID, DWORD, PVOID, ct.POINTER(ct.POINTER(WLAN_AVAILABLE_NETWORK_LIST))]
         func_ref.restype = DWORD
         networks = ct.pointer(WLAN_AVAILABLE_NETWORK_LIST())
-        res = func_ref(self._handle, self.guid, None, ct.byref(networks))
+        dwflag = DWORD()
+        res = func_ref(self._handle, self._guid, dwflag, None, ct.byref(networks))
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error getting available networks")
         return networks
