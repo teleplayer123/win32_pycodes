@@ -10,12 +10,14 @@ class GUID(ct.Structure):
         ("Data1", DWORD),
         ("Data2", WORD),
         ("Data3", WORD),
-        ("Data4", BYTE * 8)
+        ("Data4", BYTE * 2),
+        ("Data5", BYTE * 6),
     ]
 
     def __str__(self):
-        return "{:04x}-{:02x}-{:02x}{}{}{}{}{}{}{}{}".format(
-            self.Data1, self.Data2, self.Data3, *[x for x in self.Data4]
+        return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
+            self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data5[0],
+            self.Data5[1], self.Data5[2], self.Data5[3], self.Data5[4], self.Data5[5]
         )
 
 
