@@ -20,56 +20,59 @@ class GUID(ct.Structure):
             self.Data5[1], self.Data5[2], self.Data5[3], self.Data5[4], self.Data5[5]
         )
 
+WLAN_CONNECTION_MODE_T = UINT
+WLAN_CONNECTION_MODE = {
+    "wlan_connection_mode_profile": 0,
+    "wlan_connection_mode_temporary_profile": 1,
+    "wlan_connection_mode_discovery_secure": 2,
+    "wlan_connection_mode_discovery_unsecure": 3,
+    "wlan_connection_mode_auto": 4,
+    "wlan_connection_mode_invalid": 5
+}
 
-class WLAN_CONNECTION_MODE(Enum):
-    wlan_connection_mode_profile = 0,
-    wlan_connection_mode_temporary_profile = 1
-    wlan_connection_mode_discovery_secure = 2
-    wlan_connection_mode_discovery_unsecure = 3
-    wlan_connection_mode_auto = 4
-    wlan_connection_mode_invalid = 5
-
-class WLAN_INTF_OPCODE(Enum):
-    wlan_intf_opcode_autoconf_start = 0
-    wlan_intf_opcode_autoconf_enabled = 1
-    wlan_intf_opcode_background_scan_enabled = 2
-    wlan_intf_opcode_media_streaming_mode = 3
-    wlan_intf_opcode_radio_state = 4
-    wlan_intf_opcode_bss_type = 5
-    wlan_intf_opcode_interface_state = 6
-    wlan_intf_opcode_current_connection = 7
-    wlan_intf_opcode_channel_number = 8
-    wlan_intf_opcode_supported_infrastructure_auth_cipher_pairs = 9
-    wlan_intf_opcode_supported_adhoc_auth_cipher_pairs = 10
-    wlan_intf_opcode_supported_country_or_region_string_list = 11
-    wlan_intf_opcode_current_operation_mode = 12
-    wlan_intf_opcode_supported_safe_mode = 13
-    wlan_intf_opcode_certified_safe_mode = 14
-    wlan_intf_opcode_hosted_network_capable = 15
-    wlan_intf_opcode_management_frame_protection_capable = 16
-    wlan_intf_opcode_secondary_sta_interfaces = 17
-    wlan_intf_opcode_secondary_sta_synchronized_connections = 18
-    wlan_intf_opcode_autoconf_end = 0x0fffffff
-    wlan_intf_opcode_msm_start = 0x10000100
-    wlan_intf_opcode_statistics = 0x10000101
-    wlan_intf_opcode_rssi = 0x10000102
-    wlan_intf_opcode_msm_end = 0x1fffffff
-    wlan_intf_opcode_security_start = 0x20010000
-    wlan_intf_opcode_security_end = 0x2fffffff
-    wlan_intf_opcode_ihv_start = 0x30000000
-    wlan_intf_opcode_ihv_end = 0x3fffffff
+WLAN_INTF_OPCODE_T = UINT
+WLAN_INTF_OPCODE = {
+    "wlan_intf_opcode_autoconf_start": 0,
+    "wlan_intf_opcode_autoconf_enabled": 1,
+    "wlan_intf_opcode_background_scan_enabled": 2,
+    "wlan_intf_opcode_media_streaming_mode": 3,
+    "wlan_intf_opcode_radio_state": 4,
+    "wlan_intf_opcode_bss_type": 5,
+    "wlan_intf_opcode_interface_state": 6,
+    "wlan_intf_opcode_current_connection": 7,
+    "wlan_intf_opcode_channel_number": 8,
+    "wlan_intf_opcode_supported_infrastructure_auth_cipher_pairs": 9,
+    "wlan_intf_opcode_supported_adhoc_auth_cipher_pairs": 10,
+    "wlan_intf_opcode_supported_country_or_region_string_list": 11,
+    "wlan_intf_opcode_current_operation_mode": 12,
+    "wlan_intf_opcode_supported_safe_mode": 13,
+    "wlan_intf_opcode_certified_safe_mode": 14,
+    "wlan_intf_opcode_hosted_network_capable": 15,
+    "wlan_intf_opcode_management_frame_protection_capable": 16,
+    "wlan_intf_opcode_secondary_sta_interfaces": 17,
+    "wlan_intf_opcode_secondary_sta_synchronized_connections": 18,
+    "wlan_intf_opcode_autoconf_end": 0x0fffffff,
+    "wlan_intf_opcode_msm_start": 0x10000100,
+    "wlan_intf_opcode_statistics": 0x10000101,
+    "wlan_intf_opcode_rssi": 0x10000102,
+    "wlan_intf_opcode_msm_end": 0x1fffffff,
+    "wlan_intf_opcode_security_start": 0x20010000,
+    "wlan_intf_opcode_security_end": 0x2fffffff,
+    "wlan_intf_opcode_ihv_start": 0x30000000,
+    "wlan_intf_opcode_ihv_end": 0x3fffffff
+}
 
 WLAN_INTERFACE_STATE_T = UINT
-class WLAN_INTERFACE_STATE(Enum):
-    wlan_interface_state_not_ready = 0
-    wlan_interface_state_connected = 1
-    wlan_interface_state_ad_hoc_network_formed = 2
-    wlan_interface_state_disconnecting = 3
-    wlan_interface_state_disconnected = 4
-    wlan_interface_state_associating = 5
-    wlan_interface_state_discovering = 6
-    wlan_interface_state_authenticating = 7
-
+WLAN_INTERFACE_STATE = {
+    "wlan_interface_state_not_ready": 0,
+    "wlan_interface_state_connected": 1,
+    "wlan_interface_state_ad_hoc_network_formed": 2,
+    "wlan_interface_state_disconnecting": 3,
+    "wlan_interface_state_disconnected": 4,
+    "wlan_interface_state_associating": 5,
+    "wlan_interface_state_discovering": 6,
+    "wlan_interface_state_authenticating": 7
+}
 
 class WLAN_INTERFACE_INFO(ct.Structure):
     _fields_ = [
