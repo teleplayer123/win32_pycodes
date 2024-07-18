@@ -1,10 +1,12 @@
 import ctypes as ct
-from ctypes.wintypes import DWORD, HANDLE, WORD, BOOLEAN, BYTE, WCHAR, UINT
+from ctypes.wintypes import DWORD, HANDLE, WORD, BYTE, WCHAR, UINT, ULONG, BOOL
 from enum import Enum
 
 wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
 ERROR_SUCCESS = 0
 WLAN_MAX_NAME_LENGTH = 256
+DOT11_SSID_MAX_LENGTH = 32
+WLAN_MAX_PHY_TYPE_NUMBER = 8
 
 class GUID(ct.Structure):
     _fields_ = [
@@ -75,6 +77,41 @@ WLAN_INTERFACE_STATE = {
     "wlan_interface_state_authenticating": 7
 }
 
+WLAN_REASON_CODE_T = UINT
+WLAN_REASON_CODE = {
+    "success": 0,
+    "unknown": 0x10000+1
+}
+
+DOT11_AUTH_ALGORITHM_T = UINT
+DOT11_AUTH_ALGORITHM = {
+    "DOT11_AUTH_ALGO_80211_OPEN": 1,
+    
+}
+
+DOT11_PHY_TYPE_T = UINT
+DOT11_PHY_TYPE = {
+    "dot11_phy_type_unknown": 0,
+    "dot11_phy_type_any": 0,
+    "dot11_phy_type_fhss": 1,
+    "dot11_phy_type_dsss": 2,
+    "dot11_phy_type_irbaseband": 3,
+    "dot11_phy_type_ofdm": 4,
+    "dot11_phy_type_hrdsss": 5,
+    "dot11_phy_type_erp": 6,
+    "dot11_phy_type_ht": 7,
+    "dot11_phy_type_vht": 8,
+    "dot11_phy_type_IHV_start": 0x80000000,
+    "dot11_phy_type_IHV_end": 0xffffffff
+}
+
+DOT11_BSS_TYPE_T = UINT
+DOT11_BSS_TYPE = {
+    "dot11_BSS_type_infrastructure": 1,
+    "dot11_BSS_type_independent": 2,
+    "dot11_BSS_type_any": 3
+}
+
 class WLAN_INTERFACE_INFO(ct.Structure):
     _fields_ = [
         ("InterfaceGuid", GUID),
@@ -89,9 +126,29 @@ class WLAN_INTERFACE_INFO_LIST(ct.Structure):
         ("InterfaceInfo", WLAN_INTERFACE_INFO * 1)
     ]
 
+
+
+
+class DOT11_SSID(ct.Structure):
+    _fields_ = [
+        ("uSSIDLength", ULONG),
+        ("ucSSID", ct.c_char * DOT11_SSID_MAX_LENGTH)
+    ]
+
 class WLAN_AVAILABLE_NETWORK(ct.Structure):
     _fields_ = [
-        ("strProfileName")
+        ("strProfileName", WCHAR * WLAN_MAX_NAME_LENGTH),
+        ("dot11Ssid", DOT11_SSID),
+        ("dot11BssType", DOT11_BSS_TYPE_T),
+        ("uNumberOfBssids", ULONG),
+        ("bNetworkConnectable", BOOL),
+        ("wlanNotConnectableReason", WLAN_REASON_CODE_T),
+        ("uNumberOfPhyTypes", ULONG),
+        ("dot11PhyTypes", DOT11_PHY_TYPE_T),
+        ("bMorePhyTypes", BOOL),
+        ("wlanSignalQuality", ULONG),
+        ("bSecurityEnabled", BOOL),
+        ("dot11DefaultAuthAlgorithm", DOT11_AUTH_ALGORITHM_T)
     ]
 
 class WLAN_AVAILABLE_NETWORK_LIST(ct.Structure):
