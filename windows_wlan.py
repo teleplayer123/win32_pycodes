@@ -152,9 +152,6 @@ class WLAN_INTERFACE_INFO_LIST(ct.Structure):
         ("InterfaceInfo", WLAN_INTERFACE_INFO * 1)
     ]
 
-
-
-
 class DOT11_SSID(ct.Structure):
     _fields_ = [
         ("uSSIDLength", ULONG),
@@ -175,14 +172,16 @@ class WLAN_AVAILABLE_NETWORK(ct.Structure):
         ("wlanSignalQuality", ULONG),
         ("bSecurityEnabled", BOOL),
         ("dot11DefaultAuthAlgorithm", DOT11_AUTH_ALGORITHM_T),
-        ("dot11DefaultCipherAlgorithm", DOT11_CIPHER_ALGORITHM_T)
+        ("dot11DefaultCipherAlgorithm", DOT11_CIPHER_ALGORITHM_T),
+        ("dwFlags", DWORD),
+        ("dwReserved", DWORD)
     ]
 
 class WLAN_AVAILABLE_NETWORK_LIST(ct.Structure):
     _fields_ = [
         ("dwNumberOfItems", DWORD),
         ("dwIndex", DWORD),
-
+        ("Network", WLAN_AVAILABLE_NETWORK * 1)
     ]
 
 
