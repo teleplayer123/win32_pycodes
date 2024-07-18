@@ -7,6 +7,7 @@ ERROR_SUCCESS = 0
 WLAN_MAX_NAME_LENGTH = 256
 DOT11_SSID_MAX_LENGTH = 32
 WLAN_MAX_PHY_TYPE_NUMBER = 8
+WLAN_MAX_PHY_INDEX = 64
 PVOID = ct.c_void_p
 WIN32_CHECK_ERROR = lambda e: e != ERROR_SUCCESS
 
@@ -24,6 +25,8 @@ class GUID(ct.Structure):
             self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data5[0],
             self.Data5[1], self.Data5[2], self.Data5[3], self.Data5[4], self.Data5[5]
         )
+
+DOT11_MAC_ADDRESS = ct.c_char * 6
 
 WLAN_CONNECTION_MODE_T = UINT
 WLAN_CONNECTION_MODE = {
@@ -192,6 +195,26 @@ class WLAN_AVAILABLE_NETWORK_LIST(ct.Structure):
         ("Network", WLAN_AVAILABLE_NETWORK * 1)
     ]
 
+class WLAN_INTERFACE_CAPABILITY(ct.Structure):
+    _fields_ = [
+        ("bDot11DSupported", BOOL),
+        ("dwMaxDesiredSsidListSize", DWORD),
+        ("dwMaxDesiredBssidListSize", DWORD),
+        ("dwNumberOfSupportedPhys", DWORD),
+        ("dot11PhyTypes", DOT11_PHY_TYPE_T * WLAN_MAX_PHY_INDEX)
+    ]
+
+class WLAN_ASSOCIATION_ATTRIBUTES(ct.Structure):
+    _fields_ = [
+        ("dot11Ssid", DOT11_SSID),
+        ("dot11BssType", DOT11_BSS_TYPE_T),
+        ("dot11Bssid", DOT11_MAC_ADDRESS),
+        ("dot11PhyType", DOT11_PHY_TYPE_T),
+        ("uDot11PhyIndex", ULONG),
+        ("wlanSignalQuality", ULONG),
+        ("ulRxRate", ULONG),
+        ("ulTxRate", ULONG)
+    ]
 
 class Win32_WlanApi:
 
@@ -234,7 +257,7 @@ class Win32_WlanApi:
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error closing wlan handle")
         return res
-
+            
     def WlanEnumInterfaces(self):
         func_ref = wlanapi.WlanEnumInterfaces
         func_ref.argtypes = [HANDLE, PVOID, ct.POINTER(ct.POINTER(WLAN_INTERFACE_INFO_LIST))]
