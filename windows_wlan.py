@@ -151,6 +151,12 @@ DOT11_BSS_TYPE = {
     "dot11_BSS_type_any": 3
 }
 
+WLAN_IHV_CONTROL_TYPE_T = UINT
+WLAN_IHV_CONTROL_TYPE = {
+    "wlan_ihv_control_type_service": 0,
+    "wlan_ihv_control_type_driver": 1
+}
+
 class WLAN_INTERFACE_INFO(ct.Structure):
     _fields_ = [
         ("InterfaceGuid", GUID),
@@ -312,8 +318,38 @@ class Win32_WlanApi:
             raise Exception("Error getting available networks")
         return networks
     
-    def WlanQueryInterface(self, opcode):
+    def WlanQueryInterface(self, opcode: WLAN_INTF_OPCODE_T):
+        """
+        DWORD WlanQueryInterface(
+            [in]            HANDLE                  hClientHandle,
+            [in]            const GUID              *pInterfaceGuid,
+            [in]            WLAN_INTF_OPCODE        OpCode,
+                            PVOID                   pReserved,
+            [out]           PDWORD                  pdwDataSize,
+            [out]           PVOID                   *ppData,
+            [out, optional] PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType
+            );
+        """
         func_ref = wlanapi.WlanQueryInterface
         func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), PVOID, ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
         func_ref.restype = DWORD
-        
+        #TODO finish this function
+
+
+    def WlanIhvControl(self):
+        """
+        DWORD WlanIhvControl(
+            [in]                HANDLE                hClientHandle,
+            [in]                const GUID            *pInterfaceGuid,
+            [in]                WLAN_IHV_CONTROL_TYPE Type,
+            [in]                DWORD                 dwInBufferSize,
+            [in]                PVOID                 pInBuffer,
+            [in]                DWORD                 dwOutBufferSize,
+            [in, out, optional] PVOID                 pOutBuffer,
+            [out]               PDWORD                pdwBytesReturned
+            );
+        """
+        func_ref = wlanapi.WlanIhvControl
+        func_ref.argtypes = [HANDLE, GUID, WLAN_IHV_CONTROL_TYPE_T, DWORD, PVOID, DWORD, PVOID, ct.POINTER(DWORD)]
+        func_ref.restype = DWORD
+        #TODO finish this function
