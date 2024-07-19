@@ -1,5 +1,5 @@
 import ctypes as ct
-from ctypes.wintypes import DWORD, HANDLE, WORD, BYTE, WCHAR, UINT, ULONG, BOOL
+from ctypes.wintypes import DWORD, HANDLE, WORD, BYTE, WCHAR, UINT, ULONG, BOOL, LONG, USHORT
 from enum import Enum
 
 wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
@@ -8,7 +8,9 @@ WLAN_MAX_NAME_LENGTH = 256
 DOT11_SSID_MAX_LENGTH = 32
 WLAN_MAX_PHY_TYPE_NUMBER = 8
 WLAN_MAX_PHY_INDEX = 64
+DOT11_RATE_SET_MAX_LENGTH = 126
 PVOID = ct.c_void_p
+ULONGLONG = ct.c_ulonglong
 WIN32_CHECK_ERROR = lambda e: e != ERROR_SUCCESS
 
 class GUID(ct.Structure):
@@ -151,6 +153,13 @@ DOT11_BSS_TYPE = {
     "dot11_BSS_type_any": 3
 }
 
+DOT11_RADIO_STATE_T = UINT
+DOT11_RADIO_STATE = {
+    "dot11_radio_state_unknown": 0,
+    "dot11_radio_state_on": 1,
+    "dot11_radio_state_off": 2
+}
+
 WLAN_IHV_CONTROL_TYPE_T = UINT
 WLAN_IHV_CONTROL_TYPE = {
     "wlan_ihv_control_type_service": 0,
@@ -254,6 +263,155 @@ class WLAN_QOS_INFO(ct.Structure):
         ("connectionQoSInfo", WLAN_CONNECTION_QOS_INFO)
     ]
 
+class WLAN_SECURITY_ATTRIBUTES(ct.Structure):
+    _fields_ = [
+        ("bSecurityEnabled", BOOL),
+        ("bOneXEnabled", BOOL),
+        ("dot11AuthAlgorithm", DOT11_AUTH_ALGORITHM_T),
+        ("dot11CipherAlgorithm", DOT11_CIPHER_ALGORITHM_T)
+    ]
+
+class WLAN_CONNECTION_ATTRIBUTES(ct.Structure):
+    _fields_ = [
+        ("isState", WLAN_INTERFACE_STATE_T),
+        ("wlanConnectionMode", WLAN_CONNECTION_MODE_T),
+        ("strProfileName", WCHAR * WLAN_MAX_NAME_LENGTH),
+        ("wlanAssociationAttributes", WLAN_ASSOCIATION_ATTRIBUTES),
+        ("wlanSecurityAttributes", WLAN_SECURITY_ATTRIBUTES)
+    ]
+
+class WLAN_PHY_RADIO_STATE(ct.Structure):
+    _fields_ = [
+        ("dwPhyIndex", DWORD),
+        ("dot11SoftwareRadioState", DOT11_RADIO_STATE_T),
+        ("dot11HardwareRadioState", DOT11_RADIO_STATE_T)
+    ]
+
+class WLAN_RADIO_STATE(ct.Structure):
+    _fields_ = [
+        ("dwNumberOfPhys", DWORD),
+        ("PhyRadioState", WLAN_PHY_RADIO_STATE * WLAN_MAX_PHY_INDEX)
+    ]
+
+class WLAN_RATE_SET(ct.Structure):
+    _fields_ = [
+        ("uRateSetLength", ULONG),
+        ("usRateSet", USHORT * DOT11_RATE_SET_MAX_LENGTH)
+    ]
+
+class WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO(ct.Structure):
+    _fields_ = [
+        ("ucLinkID", ct.c_char),
+        ("ulChannelCenterFrequencyMhz", ULONG),
+        ("ulBandwidth", ULONG),
+        ("lRssi", LONG),
+        ("wlanRateSet", WLAN_RATE_SET)
+    ]
+
+class WLAN_REALTIME_CONNECTION_QUALITY(ct.Structure):
+    _fields_ = [
+        ("dot11PhyType", DOT11_PHY_TYPE_T),
+        ("ulLinkQuality", ULONG),
+        ("ulRxRate", ULONG),
+        ("ulTxRate", ULONG),
+        ("bIsMLOConnection", BOOL),
+        ("ulNumLinks", ULONG),
+        ("linksInfo", WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO * 1)
+    ]
+
+class WLAN_MAC_FRAME_STATISTICS(ct.Structure):
+    _fields_ = [
+        ("ullTransmittedFrameCount", ULONGLONG),
+        ("ullReceivedFrameCount", ULONGLONG),
+        ("ullWEPExcludedCount", ULONGLONG),
+        ("ullTKIPLocalMICFailures", ULONGLONG),
+        ("ullTKIPReplays", ULONGLONG),
+        ("ullTKIPICVErrorCount", ULONGLONG),
+        ("ullCCMPReplays", ULONGLONG),
+        ("ullCCMPDecryptErrors", ULONGLONG),
+        ("ullWEPUndecryptableCount", ULONGLONG),
+        ("ullWEPICVErrorCount", ULONGLONG),
+        ("ullDecryptSuccessCount", ULONGLONG),
+        ("ullDecryptFailureCount", ULONGLONG)
+    ]
+
+class WLAN_PHY_FRAME_STATISTICS(ct.Structure):
+    _fields_ = [
+        ("ullTransmittedFrameCount", ULONGLONG),
+        ("ullMulticastTransmittedFrameCount", ULONGLONG),
+        ("ullFailedCount", ULONGLONG),
+        ("ullRetryCount", ULONGLONG),
+        ("ullMultipleRetryCount", ULONGLONG),
+        ("ullMaxTXLifetimeExceededCount", ULONGLONG),
+        ("ullTransmittedFragmentCount", ULONGLONG),
+        ("ullRTSSuccessCount", ULONGLONG),
+        ("ullRTSFailureCount", ULONGLONG),
+        ("ullACKFailureCount", ULONGLONG),
+        ("ullReceivedFrameCount", ULONGLONG),
+        ("ullMulticastReceivedFrameCount", ULONGLONG),
+        ("ullPromiscuousReceivedFrameCount", ULONGLONG),
+        ("ullMaxRXLifetimeExceededCount", ULONGLONG),
+        ("ullFrameDuplicateCount", ULONGLONG),
+        ("ullReceivedFragmentCount", ULONGLONG),
+        ("ullPromiscuousReceivedFragmentCount", ULONGLONG),
+        ("ullFCSErrorCount", ULONGLONG)
+    ]
+
+class WLAN_STATISTICS(ct.Structure):
+    _fields_ = [
+        ("ullFourWayHandshakeFailures", ULONGLONG),
+        ("ullTKIPCounterMeasuresInvoked", ULONGLONG),
+        ("ullReserved", ULONGLONG),
+        ("MacUcastCounters", WLAN_MAC_FRAME_STATISTICS),
+        ("MacMcastCounters", WLAN_MAC_FRAME_STATISTICS),
+        ("dwNumberOfPhys", DWORD),
+        ("PhyCounters", WLAN_PHY_FRAME_STATISTICS * 1)
+    ]
+
+class DOT11_AUTH_CIPHER_PAIR(ct.Structure):
+    _fields_ = [
+        ("AuthAlgoId", DOT11_AUTH_ALGORITHM_T),
+        ("CipherAlgoId", DOT11_CIPHER_ALGORITHM_T)
+    ]
+
+class WLAN_AUTH_CIPHER_PAIR_LIST(ct.Structure):
+    _fields_ = [
+        ("dwNumberOfItems", DWORD),
+        ("pAuthCipherPairLis", DOT11_AUTH_CIPHER_PAIR * 1)
+    ]
+
+DOT11_COUNTRY_OR_REGION_STRING = ct.c_char * 3
+class WLAN_COUNTRY_OR_REGION_STRING_LIST(ct.Structure):
+    _fields_ = [
+        ("dwNumberOfItems", DWORD),
+        ("pCountryOrRegionStringList", DOT11_COUNTRY_OR_REGION_STRING * 1)
+    ]
+
+WLAN_INTF_OPCODE_TYPES = {
+    "wlan_intf_opcode_autoconf_enabled": BOOL,
+    "wlan_intf_opcode_background_scan_enabled": BOOL,
+    "wlan_intf_opcode_bss_type": DOT11_BSS_TYPE,
+    "wlan_intf_opcode_certified_safe_mode": BOOL,
+    "wlan_intf_opcode_channel_number": ULONG,
+    "wlan_intf_opcode_current_connection": WLAN_CONNECTION_ATTRIBUTES,
+    "wlan_intf_opcode_current_operation_mode": ULONG,
+    "wlan_intf_opcode_hosted_network_capable": BOOL,
+    "wlan_intf_opcode_interface_state": WLAN_INTERFACE_STATE,
+    "wlan_intf_opcode_management_frame_protection_capable": BOOL,
+    "wlan_intf_opcode_media_streaming_mode": BOOL,
+    "wlan_intf_opcode_qos_info": WLAN_QOS_INFO,
+    "wlan_intf_opcode_radio_state": WLAN_RADIO_STATE,
+    "wlan_intf_opcode_realtime_connection_quality": WLAN_REALTIME_CONNECTION_QUALITY,
+    "wlan_intf_opcode_rssi": LONG,
+    "wlan_intf_opcode_secondary_sta_interfaces": WLAN_INTERFACE_INFO_LIST,
+    "wlan_intf_opcode_secondary_sta_synchronized_connections": BOOL,
+    "wlan_intf_opcode_statistics": WLAN_STATISTICS,
+    "wlan_intf_opcode_supported_adhoc_auth_cipher_pairs": WLAN_AUTH_CIPHER_PAIR_LIST,
+    "wlan_intf_opcode_supported_country_or_region_string_list": WLAN_COUNTRY_OR_REGION_STRING_LIST,
+    "wlan_intf_opcode_supported_infrastructure_auth_cipher_pairs": WLAN_AUTH_CIPHER_PAIR_LIST,
+    "wlan_intf_opcode_supported_safe_mode": BOOL
+}
+
 class Win32_WlanApi:
 
     def __init__(self):
@@ -331,11 +489,11 @@ class Win32_WlanApi:
             );
         """
         func_ref = wlanapi.WlanQueryInterface
-        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(PVOID), ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
+        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
         func_ref.restype = DWORD
         opcode = WLAN_INTF_OPCODE[opcode_key]
         data_size = ct.pointer(ct.sizeof(opcode_type))
-        data = ct.cast(ct.pointer(opcode_type()), PVOID)
+        data = ct.pointer(opcode_type())
         res = func_ref(self._handle, self._guid, opcode, None, ct.byref(data_size), ct.byref(data), ct.byref(opcode_type))
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error querying wlan interface")
