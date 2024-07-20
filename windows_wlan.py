@@ -117,6 +117,7 @@ DOT11_AUTH_ALGORITHM = {
     "DOT11_AUTH_ALGO_IHV_START": 0x80000000,
     "DOT11_AUTH_ALGO_IHV_END": 0xffffffff
 }
+DOT11_AUTH_ALGORITHM_VALUES = {v: k for k, v in DOT11_AUTH_ALGORITHM.items()}
 
 DOT11_CIPHER_ALGORITHM_T = UINT
 DOT11_CIPHER_ALGORITHM = {
@@ -131,6 +132,7 @@ DOT11_CIPHER_ALGORITHM = {
     "DOT11_CIPHER_ALGO_IHV_START": 0x80000000,
     "DOT11_CIPHER_ALGO_IHV_END": 0xffffffff
 }
+DOT11_CIPHER_ALGORITHM_VALUES = {v: k for k, v in DOT11_CIPHER_ALGORITHM.items()}
 
 DOT11_PHY_TYPE_T = UINT
 DOT11_PHY_TYPE = {
@@ -147,6 +149,7 @@ DOT11_PHY_TYPE = {
     "dot11_phy_type_IHV_start": 0x80000000,
     "dot11_phy_type_IHV_end": 0xffffffff
 }
+DOT11_PHY_TYPE_VALUES = {v: k for k, v in DOT11_PHY_TYPE.items()}
 
 DOT11_BSS_TYPE_T = UINT
 DOT11_BSS_TYPE = {
@@ -154,6 +157,7 @@ DOT11_BSS_TYPE = {
     "dot11_BSS_type_independent": 2,
     "dot11_BSS_type_any": 3
 }
+DOT11_BSS_TYPE_VALUES = {v: k for k, v in DOT11_BSS_TYPE.items()}
 
 DOT11_RADIO_STATE_T = UINT
 DOT11_RADIO_STATE = {
@@ -491,12 +495,12 @@ class Win32_WlanApi:
             );
         """
         func_ref = wlanapi.WlanQueryInterface
-        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), PVOID]
+        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), WLAN_OPCODE_VALUE_TYPE_T]
         func_ref.restype = DWORD
         opcode = WLAN_INTF_OPCODE[opcode_key]
         data_size = DWORD()
         data = opcode_type()
-        res = func_ref(self._handle, self._guid, opcode, None, ct.byref(data_size), ct.byref(data), None)
+        res = func_ref(self._handle, self._guid, opcode, None, ct.byref(data_size), ct.byref(data), 0)
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error querying wlan interface")
         return data

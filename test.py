@@ -1,4 +1,7 @@
-from windows_wlan import Win32_WlanApi, WLAN_INTF_OPCODE_TYPES, WLAN_INTERFACE_STATE_VALUES
+from wlan_client import WlanClient
 
-w = Win32_WlanApi()
-res = w.WlanEnumInterfaces()
+
+c = WlanClient()
+res = c.show_wlan_connection_attrs()
+
+print(res)
