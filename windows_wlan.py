@@ -39,6 +39,7 @@ WLAN_CONNECTION_MODE = {
     "wlan_connection_mode_auto": 4,
     "wlan_connection_mode_invalid": 5
 }
+WLAN_CONNECTION_MODE_VALUES = {v: k for k, v in WLAN_CONNECTION_MODE.items()}
 
 WLAN_OPCODE_VALUE_TYPE_T = UINT
 WLAN_OPCODE_VALUE_TYPE = {
@@ -91,6 +92,7 @@ WLAN_INTERFACE_STATE = {
     "wlan_interface_state_discovering": 6,
     "wlan_interface_state_authenticating": 7
 }
+WLAN_INTERFACE_STATE_VALUES = {v: k for k, v in WLAN_INTERFACE_STATE.items()}
 
 WLAN_REASON_CODE_T = UINT
 WLAN_REASON_CODE = {
