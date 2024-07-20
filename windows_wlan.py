@@ -500,9 +500,9 @@ class Win32_WlanApi:
         func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
         func_ref.restype = DWORD
         data_size = DWORD()
-        data = ct.pointer(opcode_type())
+        data = opcode_type()
         opcode_value_type = WLAN_OPCODE_VALUE_TYPE_T()
-        res = func_ref(self._handle, self._guid, opcode, None, data_size, data, opcode_value_type)
+        res = func_ref(self._handle, self._guid, opcode, None, ct.byref(data_size), ct.byref(data), ct.byref(opcode_value_type))
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error querying wlan interface")
         return data
