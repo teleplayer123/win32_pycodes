@@ -482,7 +482,7 @@ class Win32_WlanApi:
             raise Exception("Error getting available networks")
         return networks
     
-    def WlanQueryInterface(self, opcode_key, opcode_type):
+    def WlanQueryInterface(self, opcode_key):
         """
         DWORD WlanQueryInterface(
             [in]            HANDLE                  hClientHandle,
@@ -494,13 +494,15 @@ class Win32_WlanApi:
             [out, optional] PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType
             );
         """
-        func_ref = wlanapi.WlanQueryInterface
-        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), WLAN_OPCODE_VALUE_TYPE_T]
-        func_ref.restype = DWORD
         opcode = WLAN_INTF_OPCODE[opcode_key]
+        opcode_type = WLAN_INTF_OPCODE_TYPES[opcode_key]
+        func_ref = wlanapi.WlanQueryInterface
+        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
+        func_ref.restype = DWORD
         data_size = DWORD()
-        data = opcode_type()
-        res = func_ref(self._handle, self._guid, opcode, None, ct.byref(data_size), ct.byref(data), 0)
+        data = ct.pointer(opcode_type())
+        opcode_value_type = WLAN_OPCODE_VALUE_TYPE_T()
+        res = func_ref(self._handle, self._guid, opcode, None, data_size, data, opcode_value_type)
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error querying wlan interface")
         return data

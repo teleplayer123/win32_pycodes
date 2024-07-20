@@ -1,4 +1,4 @@
-from windows_wlan import Win32_WlanApi, WLAN_INTF_OPCODE_TYPES, WLAN_INTERFACE_STATE_VALUES, WLAN_CONNECTION_MODE_VALUES, DOT11_BSS_TYPE_VALUES, DOT11_PHY_TYPE_VALUES, DOT11_AUTH_ALGORITHM_VALUES, DOT11_CIPHER_ALGORITHM_VALUES
+from windows_wlan import Win32_WlanApi, WLAN_INTERFACE_STATE_VALUES, WLAN_CONNECTION_MODE_VALUES, DOT11_BSS_TYPE_VALUES, DOT11_PHY_TYPE_VALUES, DOT11_AUTH_ALGORITHM_VALUES, DOT11_CIPHER_ALGORITHM_VALUES
 
 
 class WlanClient:
@@ -13,8 +13,7 @@ class WlanClient:
         network = networks[0].Network[0].dot11Ssid
         print(network.ucSSID.decode())
         k = "wlan_intf_opcode_current_connection"
-        t = WLAN_INTF_OPCODE_TYPES[k]
-        conn_attrs = self.client.WlanQueryInterface(k, t)
+        conn_attrs = self.client.WlanQueryInterface(k)
         return conn_attrs
     
     def get_wlan_assoc_attrs(self, obj):
@@ -38,10 +37,10 @@ class WlanClient:
         Cipher Algorithm: {DOT11_CIPHER_ALGORITHM_VALUES[obj.dot11CipherAlgorithm]}
         """
 
-    def show_wlan_connection_attrs(self):
+    def get_connection_attrs_dict(self):
         res = {}
         conn_attrs = self.get_wlan_connection_attrs()
-        res["connection_state"] = WLAN_INTERFACE_STATE_VALUES[int(conn_attrs.isState)]
+        res["connection_state"] = WLAN_INTERFACE_STATE_VALUES[conn_attrs.isState]
         res["connection_mode"] = WLAN_CONNECTION_MODE_VALUES[int(conn_attrs.wlanConnectionMode)]
         res["profile_name"] = str(conn_attrs.strProfileName.decode())
         res["association_attrs"] = self.get_wlan_assoc_attrs(conn_attrs.wlanAssociationAttributes)
