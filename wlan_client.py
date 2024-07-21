@@ -3,10 +3,14 @@ from windows_wlan import Win32_WlanApi, WLAN_INTERFACE_STATE_VALUES, WLAN_CONNEC
 
 class WlanClient:
 
-    def __init__(self):
+    def __enter__(self):
         self.client = Win32_WlanApi()
         self.ifaces = self.client.WlanEnumInterfaces()
         self.guid = self.ifaces[0].InterfaceInfo[0].InterfaceGuid
+        return self
+
+    def __exit__(self, e_type, e_val, e_tb):
+        self.client.WlanCloseHandle()
 
     def _wlan_connection_attrs(self):
         k = "wlan_intf_opcode_current_connection"
