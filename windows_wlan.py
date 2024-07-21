@@ -526,7 +526,7 @@ class Win32_WlanApi:
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error getting available networks")
         return networks
-    
+
     def WlanQueryInterface(self, opcode_key):
         """
         DWORD WlanQueryInterface(

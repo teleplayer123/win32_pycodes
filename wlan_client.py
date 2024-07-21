@@ -23,6 +23,16 @@ class WlanClient:
         # print(network.ucSSID.decode())
         return networks
     
+    def _wlan_qos_info(self):
+        k = "wlan_intf_opcode_qos_info"
+        qos_info = self.client.WlanQueryInterface(k)
+        return qos_info
+    
+    def get_wlan_qos_capabilities(self, obj):
+        res = {
+            "mscs_supported": bool(obj.bMSCSSupported)
+        }
+    
     def get_wlan_assoc_attrs(self, obj):
         res = {
             "ssid": obj.dot11Ssid.ucSSID.decode(),
@@ -55,3 +65,9 @@ class WlanClient:
         res["association_attrs"] = self.get_wlan_assoc_attrs(conn_attrs.wlanAssociationAttributes)
         res["security_attrs"] = self.get_wlan_sec_attrs(conn_attrs.wlanSecurityAttributes)
         return res
+    
+    def get_wlan_qos_info(self):
+        res = {}
+        qos_info = self._wlan_qos_info().contents
+        res["guid"] = str(self.guid)
+        res[""]
