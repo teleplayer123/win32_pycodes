@@ -1,5 +1,5 @@
 import ctypes as ct
-from ctypes.wintypes import DWORD, HANDLE, WORD, BYTE, WCHAR, UINT, ULONG, BOOL, LONG, USHORT
+from ctypes.wintypes import DWORD, HANDLE, WORD, BYTE, WCHAR, UINT, ULONG, BOOL, LONG, USHORT, BOOLEAN
 
 
 wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
@@ -396,6 +396,42 @@ class WLAN_COUNTRY_OR_REGION_STRING_LIST(ct.Structure):
         ("pCountryOrRegionStringList", DOT11_COUNTRY_OR_REGION_STRING * 1)
     ]
 
+class WLAN_BSS_ENTRY(ct.Structure):
+    _fields_ = [
+        ("dot11Ssid", DOT11_SSID),
+        ("uPhyId", ULONG),
+        ("dot11Bssid", DOT11_MAC_ADDRESS),
+        ("dot11BssType", DOT11_BSS_TYPE_T),
+        ("dot11BssPhyType", DOT11_PHY_TYPE_T),
+        ("lRssi", LONG),
+        ("uLinkQuality", ULONG),
+        ("bInRegDomain", BOOLEAN),
+        ("usBeaconPeriod", USHORT),
+        ("ullTimestamp", ULONGLONG),
+        ("ullHostTimestamp", ULONGLONG),
+        ("usCapabilityInformation", USHORT),
+        ("ulChCenterFrequency", ULONG),
+        ("wlanRateSet", WLAN_RATE_SET),
+        ("ulIeOffset", ULONG),
+        ("ulIeSize", ULONG)
+    ]
+
+class WLAN_BSS_LIST(ct.Structure):
+    _fields_ = [
+        ("dwTotalSize", DWORD),
+        ("dwNumberOfItems", DWORD),
+        ("wlanBssEntries", WLAN_BSS_ENTRY * 1)
+    ]
+
+class WLAN_CONNECTION_QOS_INFO(ct.Structure):
+    _fields_ = [
+        ("peerCapabilities", WLAN_QOS_CAPABILITIES),
+        ("bMSCSConfigured", BOOL),
+        ("bDSCPToUPMappingConfigured", BOOL),
+        ("ulNumConfiguredSCSStreams", ULONG),
+        ("ulNumConfiguredDSCPPolicies", ULONG)
+    ]
+
 WLAN_INTF_OPCODE_TYPES = {
     "wlan_intf_opcode_autoconf_enabled": BOOL,
     "wlan_intf_opcode_background_scan_enabled": BOOL,
@@ -462,6 +498,12 @@ class Win32_WlanApi:
         if WIN32_CHECK_ERROR(res):
             raise Exception("Error closing wlan handle")
         return res
+    
+    def WlanFreeMemory(self, p_mem):
+        func_ref = wlanapi.WlanFreeMemory
+        func_ref.argtypes = [PVOID]
+        func_ref.restype = None
+        func_ref(p_mem)
             
     def WlanEnumInterfaces(self):
         func_ref = wlanapi.WlanEnumInterfaces
