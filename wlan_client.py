@@ -20,7 +20,7 @@ class WlanClient:
         res = f"""
         SSID: {obj.dot11Ssid.ucSSID.decode()}
         BSS Type: {DOT11_BSS_TYPE_VALUES[obj.dot11BssType]}
-        BSSID: {obj.dot11Bssid.decode()}
+        BSSID: {obj.dot11Bssid}
         PHY Type: {DOT11_PHY_TYPE_VALUES[obj.dot11PhyType]}
         PHY Index: {obj.uDot11PhyIndex}
         Signal Quality: {obj.wlanSignalQuality}
@@ -39,10 +39,10 @@ class WlanClient:
 
     def get_connection_attrs_dict(self):
         res = {}
-        conn_attrs = self.get_wlan_connection_attrs()
+        conn_attrs = self.get_wlan_connection_attrs().contents
         res["connection_state"] = WLAN_INTERFACE_STATE_VALUES[conn_attrs.isState]
         res["connection_mode"] = WLAN_CONNECTION_MODE_VALUES[int(conn_attrs.wlanConnectionMode)]
-        res["profile_name"] = str(conn_attrs.strProfileName.decode())
+        res["profile_name"] = str(conn_attrs.strProfileName)
         res["association_attrs"] = self.get_wlan_assoc_attrs(conn_attrs.wlanAssociationAttributes)
         res["security_attrs"] = self.get_wlan_sec_attrs(conn_attrs.wlanSecurityAttributes)
         return res

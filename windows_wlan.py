@@ -497,10 +497,10 @@ class Win32_WlanApi:
         opcode = WLAN_INTF_OPCODE[opcode_key]
         opcode_type = WLAN_INTF_OPCODE_TYPES[opcode_key]
         func_ref = wlanapi.WlanQueryInterface
-        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(opcode_type), ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
+        func_ref.argtypes = [HANDLE, GUID, WLAN_INTF_OPCODE_T, PVOID, ct.POINTER(DWORD), ct.POINTER(ct.POINTER(opcode_type)), ct.POINTER(WLAN_OPCODE_VALUE_TYPE_T)]
         func_ref.restype = DWORD
         data_size = DWORD()
-        data = opcode_type()
+        data = ct.pointer(opcode_type())
         opcode_value_type = WLAN_OPCODE_VALUE_TYPE_T()
         res = func_ref(self._handle, self._guid, opcode, None, ct.byref(data_size), ct.byref(data), ct.byref(opcode_value_type))
         if WIN32_CHECK_ERROR(res):
