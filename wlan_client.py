@@ -30,8 +30,22 @@ class WlanClient:
     
     def get_wlan_qos_capabilities(self, obj):
         res = {
-            "mscs_supported": bool(obj.bMSCSSupported)
+            "mscs_supported": bool(obj.bMSCSSupported),
+            "dscp_to_up_mapping_supported": bool(obj.bDSCPToUPMappingSupported),
+            "scss_supported": bool(obj.bSCSSupported),
+            "dscp_policy_supported": bool(obj.bDSCPPolicySupported)
         }
+        return res
+    
+    def get_connection_qos_info(self, obj):
+        res = {
+            "peer_capabilities": self.get_wlan_qos_capabilities(obj.peerCapabilities),
+            "mscs_configured": bool(obj.bMSCSConfigured),
+            "dscp_to_up_mapping_configured": bool(obj.bDSCPToUPMappingConfigured),
+            "number_configured_scss_streams": obj.ulNumConfiguredSCSStreams,
+            "number_configured_dscp_policies": obj.ulNumConfiguredDSCPPolicies
+        }
+        return res
     
     def get_wlan_assoc_attrs(self, obj):
         res = {
@@ -70,4 +84,7 @@ class WlanClient:
         res = {}
         qos_info = self._wlan_qos_info().contents
         res["guid"] = str(self.guid)
-        res[""]
+        res["interface_capabilities"] = self.get_wlan_qos_capabilities(qos_info.interfaceCapabilities)
+        res["connected"] = bool(qos_info.bConnected)
+        res["connection_qos_info"] = self.get_connection_qos_info(qos_info.connectionQoSInfo)
+        return res
