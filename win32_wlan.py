@@ -1,8 +1,10 @@
 import ctypes as ct
 from ctypes.wintypes import DWORD, HANDLE, WORD, BYTE, WCHAR, UINT, ULONG, BOOL, LONG, USHORT, BOOLEAN
+from win32_utils import GUIDv1, GUIDv2, DOT11_MAC_ADDRESSv1, DOT11_MAC_ADDRESSv2
 
 
 wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
+WINVER = "23H2" #"24H2"
 ERROR_SUCCESS = 0
 WLAN_MAX_NAME_LENGTH = 256
 DOT11_SSID_MAX_LENGTH = 32
@@ -15,37 +17,14 @@ UCHAR = BYTE
 CHAR = ct.c_char
 WIN32_CHECK_ERROR = lambda e: e != ERROR_SUCCESS
 
-class GUID2(ct.Structure):
-    _fields_ = [
-        ("Data1", DWORD),
-        ("Data2", WORD),
-        ("Data3", WORD),
-        ("Data4", BYTE * 2),
-        ("Data5", BYTE * 6),
-    ]
 
-    def __str__(self):
-        return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
-            self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data5[0],
-            self.Data5[1], self.Data5[2], self.Data5[3], self.Data5[4], self.Data5[5]
-        )
-    
-class GUID(ct.Structure):
-    _fields_ = [
-        ("Data1", DWORD),
-        ("Data2", WORD),
-        ("Data3", WORD),
-        ("Data4", CHAR * 8),
-    ]
 
-    def __str__(self):
-        return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
-            self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data4[2],
-            self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
-        )
-
-DOT11_MAC_ADDRESS2 = UCHAR * 6
-DOT11_MAC_ADDRESS = CHAR * 6
+if WINVER == "23H2":
+    GUID = GUIDv1
+    DOT11_MAC_ADDRESS = DOT11_MAC_ADDRESSv1
+else:
+    GUID = GUIDv2
+    DOT11_MAC_ADDRESS = DOT11_MAC_ADDRESSv2
 
 WLAN_CONNECTION_MODE_T = UINT
 WLAN_CONNECTION_MODE = {
