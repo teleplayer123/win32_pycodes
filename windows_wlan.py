@@ -71,6 +71,8 @@ WLAN_INTF_OPCODE = {
     "wlan_intf_opcode_management_frame_protection_capable": 16,
     "wlan_intf_opcode_secondary_sta_interfaces": 17,
     "wlan_intf_opcode_secondary_sta_synchronized_connections": 18,
+    "wlan_intf_opcode_realtime_connection_quality": 19,
+    "wlan_intf_opcode_qos_info": 20,
     "wlan_intf_opcode_autoconf_end": 0x0fffffff,
     "wlan_intf_opcode_msm_start": 0x10000100,
     "wlan_intf_opcode_statistics": 0x10000101,
@@ -311,7 +313,7 @@ class WLAN_RATE_SET(ct.Structure):
 
 class WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO(ct.Structure):
     _fields_ = [
-        ("ucLinkID", ct.c_char),
+        ("ucLinkID", UCHAR),
         ("ulChannelCenterFrequencyMhz", ULONG),
         ("ulBandwidth", ULONG),
         ("lRssi", LONG),
@@ -326,7 +328,7 @@ class WLAN_REALTIME_CONNECTION_QUALITY(ct.Structure):
         ("ulTxRate", ULONG),
         ("bIsMLOConnection", BOOL),
         ("ulNumLinks", ULONG),
-        ("linksInfo", WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO * 1)
+        ("linksInfo", WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO * 2)
     ]
 
 class WLAN_MAC_FRAME_STATISTICS(ct.Structure):
