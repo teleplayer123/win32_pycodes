@@ -233,47 +233,4 @@ class Win32_WifiCxApi:
 
     def wdf_device_create(self):
         func_ref = self._wlanapi.WdfDeviceCreate
-
-
-class Win32_WlanApi:
-
-    def __init__(self):
-        self._handle = self.WlanOpenHandle()
-        self._wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
-
-    def WlanOpenHandle(self):
-        """
-        DWORD WlanOpenHandle(
-        [In] DWORD dwClientVersion,
-        [Reserved] PVOID pReserved,
-        [Out] PWORD pdwNegotiatedVersion
-        [Out] PHANDLE phClientHandle
-        )
-        """
-        func_ref = self._wlanapi.WlanOpenHandle
-        func_ref.argtypes = [DWORD, ct.c_void_p, ct.POINTER(DWORD), ct.POINTER(HANDLE)]  #func argument types 
-        func_ref.restype = DWORD  #func return type
-        negotiated_ver = DWORD()  #dword holder for pdwNegotiatedVersion reference
-        client_handle = HANDLE()  #handle holder for client handle reference
-        client_ver = 2  #predefined value client version for newer windows versions
-        p_reserved = None  #void variable for reserved param
-        res = func_ref(client_ver, p_reserved, ct.byref(negotiated_ver), ct.byref(client_handle))  #byref() used for [Out] params that will be assigned value
-        if res != ERROR_SUCCESS:
-            raise Exception("Error trying to open wlan handle")
-        return client_handle
-
-    def WlanCloseHandle(self):
-        """
-        DWORD WlanCloseHandle(
-        [In] HANDLE pClientHandle,
-        [Reserved] PVOID pReserved
-        )
-        """
-        func_ref = self._wlanapi.WlanCloseHandle
-        func_ref.argtypes = [HANDLE, ct.c_void_p]
-        func_ref.restype = DWORD
-        res = func_ref(self._handle, None)
-        if res != ERROR_SUCCESS:
-            raise Exception("Error closing wlan handle")
-        return res
-
+        
