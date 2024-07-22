@@ -40,7 +40,7 @@ class WlanClient:
         return float(rate)
 
     def _format_bssid(self, raw_bytes):
-        return ":".join(map(lambda x: "{:02X}".format(x), raw_bytes))
+        return ":".join(map(lambda x: "{:02x}".format(x), raw_bytes))
     
     def _get_wlan_qos_capabilities(self, obj):
         res = {
