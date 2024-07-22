@@ -17,8 +17,6 @@ UCHAR = BYTE
 CHAR = ct.c_char
 WIN32_CHECK_ERROR = lambda e: e != ERROR_SUCCESS
 
-
-
 if WINVER == "23H2":
     GUID = GUIDv1
     DOT11_MAC_ADDRESS = DOT11_MAC_ADDRESSv1
@@ -166,6 +164,7 @@ DOT11_RADIO_STATE = {
     "dot11_radio_state_on": 1,
     "dot11_radio_state_off": 2
 }
+DOT11_RADIO_STATE_VALUES = {v: k for k, v in DOT11_RADIO_STATE.items()}
 
 WLAN_IHV_CONTROL_TYPE_T = UINT
 WLAN_IHV_CONTROL_TYPE = {

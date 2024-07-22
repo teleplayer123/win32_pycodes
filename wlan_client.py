@@ -1,5 +1,13 @@
-from win32_wlan import Win32_WlanApi, WLAN_INTERFACE_STATE_VALUES, WLAN_CONNECTION_MODE_VALUES, DOT11_BSS_TYPE_VALUES, DOT11_PHY_TYPE_VALUES, DOT11_AUTH_ALGORITHM_VALUES, DOT11_CIPHER_ALGORITHM_VALUES
-
+from win32_wlan import (
+    Win32_WlanApi,
+    WLAN_INTERFACE_STATE_VALUES,
+    WLAN_CONNECTION_MODE_VALUES,
+    DOT11_BSS_TYPE_VALUES,
+    DOT11_PHY_TYPE_VALUES,
+    DOT11_AUTH_ALGORITHM_VALUES,
+    DOT11_CIPHER_ALGORITHM_VALUES,
+    DOT11_RADIO_STATE_VALUES
+)
 
 class WlanClient:
 
@@ -32,6 +40,11 @@ class WlanClient:
         k = "wlan_intf_opcode_realtime_connection_quality"
         quality_info = self.client.WlanQueryInterface(k)
         return quality_info
+    
+    def _wlan_radio_state(self):
+        k = "wlan_intf_opcode_radio_state"
+        radio_state = self.client.WlanQueryInterface(k)
+        return radio_state
     
     def _format_rate(self, num):
         d = str(num)[-3:]
@@ -95,7 +108,18 @@ class WlanClient:
             }
             res.append(link_info)
         return res
-
+    
+    def _get_wlan_phy_radio_state(self, objs, num_objs):
+        res = []
+        for obj in objs[:num_objs]:
+            info = {
+                "phy_index": obj.dwPhyIndex,
+                "software_radio_state": DOT11_RADIO_STATE_VALUES[obj.dot11SoftwareRadioState],
+                "hardware_radio_state": DOT11_RADIO_STATE_VALUES[obj.dot11HardwareRadioState]
+            }
+            res.append(info)
+        return res
+    
     def get_wlan_connection_attrs(self):
         res = {}
         conn_attrs = self._wlan_connection_attrs().contents
@@ -126,4 +150,11 @@ class WlanClient:
         res["mlo_connection"] = bool(info.bIsMLOConnection)
         res["number_of_links"] = info.ulNumLinks
         res["link_info"] = self._get_realtime_connection_link_info(info.linksInfo)
+        return res
+    
+    def get_wlan_radio_state(self):
+        res = {}
+        info = self._wlan_radio_state().contents
+        res["number_of_phys"] = info.dwNumberOfPhys
+        res["phy_radio_state"] = self._get_wlan_phy_radio_state(info.PhyRadioState, res["number_of_phys"])
         return res

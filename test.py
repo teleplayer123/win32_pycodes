@@ -9,3 +9,6 @@ with WlanClient() as c:
     # print("\n\n")
     # res = c.get_realtime_connection_quality()
     # print(res)
+    print("\n\n")
+    res = c.get_wlan_radio_state()
+    print(res)
