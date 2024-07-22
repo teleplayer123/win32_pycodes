@@ -96,9 +96,9 @@ class WlanClient:
         }
         return res
     
-    def _get_realtime_connection_link_info(self, objs):
+    def _get_realtime_connection_link_info(self, objs, num_objs):
         res = []
-        for obj in objs:
+        for obj in objs[:num_objs]:
             link_info = {
                 "link_id": obj.ucLinkID,
                 "channel_center_freq": obj.ulChannelCenterFrequencyMhz,
@@ -149,7 +149,7 @@ class WlanClient:
         res["tx_rate"] = self._format_rate(info.ulTxRate)
         res["mlo_connection"] = bool(info.bIsMLOConnection)
         res["number_of_links"] = info.ulNumLinks
-        res["link_info"] = self._get_realtime_connection_link_info(info.linksInfo)
+        res["link_info"] = self._get_realtime_connection_link_info(info.linksInfo, res["number_of_links"])
         return res
     
     def get_wlan_radio_state(self):

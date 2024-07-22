@@ -322,7 +322,7 @@ class WLAN_REALTIME_CONNECTION_QUALITY(ct.Structure):
         ("ulTxRate", ULONG),
         ("bIsMLOConnection", BOOL),
         ("ulNumLinks", ULONG),
-        ("linksInfo", WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO * 2)
+        ("linksInfo", WLAN_REALTIME_CONNECTION_QUALITY_LINK_INFO * 3)
     ]
 
 class WLAN_MAC_FRAME_STATISTICS(ct.Structure):
