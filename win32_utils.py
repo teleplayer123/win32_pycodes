@@ -37,3 +37,7 @@ class GUIDv1(ct.Structure):
             self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
         )
     
+AKM_FROM_TYPE = lambda p, a: p + (a << 24)
+CIPHER_FROM_TYPE = lambda p, c: p + (c << 24)
+RSNA_OUI_PREFIX = 0xac0f00
+WPA_OUI_PREFIX = 0xf25000
