@@ -28,6 +28,13 @@ class WlanClient:
         qos_info = self.client.WlanQueryInterface(k)
         return qos_info
     
+    def _format_rate(self, num):
+        d = str(num)[-3:]
+        i = str(num)[:-3]
+        rate = "{}.{}".format(i, d)
+        return rate
+
+    
     def get_wlan_qos_capabilities(self, obj):
         res = {
             "mscs_supported": bool(obj.bMSCSSupported),
@@ -51,12 +58,12 @@ class WlanClient:
         res = {
             "ssid": obj.dot11Ssid.ucSSID.decode(),
             "bss_type": DOT11_BSS_TYPE_VALUES[obj.dot11BssType],
-            "bssid": obj.dot11Bssid,
+            "bssid": str(obj.dot11Bssid),
             "phy_type": DOT11_PHY_TYPE_VALUES[obj.dot11PhyType],
             "phy_index": obj.uDot11PhyIndex,
             "signal_quality": obj.wlanSignalQuality,
-            "rx_rate": obj.ulRxRate,
-            "tx_rate": obj.ulTxRate
+            "rx_rate": self._format_rate(obj.ulRxRate),
+            "tx_rate": self._format_rate(obj.ulTxRate)
         }
         return res
 
