@@ -11,6 +11,7 @@ WLAN_MAX_PHY_INDEX = 64
 DOT11_RATE_SET_MAX_LENGTH = 126
 PVOID = ct.c_void_p
 ULONGLONG = ct.c_ulonglong
+UCHAR = BYTE
 WIN32_CHECK_ERROR = lambda e: e != ERROR_SUCCESS
 
 class GUID(ct.Structure):
@@ -28,7 +29,7 @@ class GUID(ct.Structure):
             self.Data5[1], self.Data5[2], self.Data5[3], self.Data5[4], self.Data5[5]
         )
 
-DOT11_MAC_ADDRESS = ct.c_char * 6
+DOT11_MAC_ADDRESS = UCHAR * 6
 
 WLAN_CONNECTION_MODE_T = UINT
 WLAN_CONNECTION_MODE = {

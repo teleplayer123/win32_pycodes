@@ -32,8 +32,10 @@ class WlanClient:
         d = str(num)[-3:]
         i = str(num)[:-3]
         rate = "{}.{}".format(i, d)
-        return rate
+        return float(rate)
 
+    def _format_bssid(self, raw_bytes):
+        return ":".join(map(lambda x: "{:02X}".format(x), raw_bytes))
     
     def get_wlan_qos_capabilities(self, obj):
         res = {
@@ -58,7 +60,7 @@ class WlanClient:
         res = {
             "ssid": obj.dot11Ssid.ucSSID.decode(),
             "bss_type": DOT11_BSS_TYPE_VALUES[obj.dot11BssType],
-            "bssid": str(obj.dot11Bssid),
+            "bssid": self._format_bssid(obj.dot11Bssid),
             "phy_type": DOT11_PHY_TYPE_VALUES[obj.dot11PhyType],
             "phy_index": obj.uDot11PhyIndex,
             "signal_quality": obj.wlanSignalQuality,
