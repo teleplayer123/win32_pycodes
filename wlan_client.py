@@ -46,6 +46,11 @@ class WlanClient:
         radio_state = self.client.WlanQueryInterface(k)
         return radio_state
     
+    def _wlan_stats(self):
+        k = "wlan_intf_opcode_statistics"
+        stats = self.client.WlanQueryInterface(k)
+        return stats
+    
     def _format_rate(self, num):
         d = str(num)[-3:]
         i = str(num)[:-3]
@@ -120,6 +125,49 @@ class WlanClient:
             res.append(info)
         return res
     
+    def _get_mac_frame_stats(self, obj):
+        res = {
+            "transmitted_frame_count": obj.ullTransmittedFrameCount,
+            "received_frame_count": obj.ullReceivedFrameCount,
+            "wep_excluded_count": obj.ullWEPExcludedCount,
+            "tkip_local_mic_fails": obj.ullTKIPLocalMICFailures,
+            "tkip_relays": obj.ullTKIPReplays,
+            "tkip_icv_error_count": obj.ullTKIPICVErrorCount,
+            "ccmp_relays": obj.ullCCMPReplays,
+            "ccmp_decrypt_errors": obj.ullCCMPDecryptErrors,
+            "wep_undecryptable_count": obj.ullWEPUndecryptableCount,
+            "wep_icv_error_count": obj.ullWEPICVErrorCount,
+            "decrypt_success_count": obj.ullDecryptSuccessCount,
+            "decrypt_failure_count": obj.ullDecryptFailureCount
+        }
+        return res
+    
+    def _get_phy_frame_stats(self, objs, num_objs):
+        res = []
+        for obj in objs[:num_objs]:
+            stats = {
+                "transmitted_frame_count": obj.ullTransmittedFrameCount,
+                "multicast_transmitted_frame_count": obj.ullMulticastTransmittedFrameCount,
+                "failed_count": obj.ullFailedCount,
+                "retry_count": obj.ullRetryCount,
+                "multiple_retry_count": obj.ullMultipleRetryCount,
+                "max_tx_lifetime_exceeded_count": obj.ullMaxTXLifetimeExceededCount,
+                "transmitted_fragment_count": obj.ullTransmittedFragmentCount,
+                "rts_success_count": obj.ullRTSSuccessCount,
+                "rts_failure_count": obj.ullRTSFailureCount,
+                "ack_failure_count": obj.ullACKFailureCount,
+                "received_frame_count": obj.ullReceivedFrameCount,
+                "multicast_received_frame_count": obj.ullMulticastReceivedFrameCount,
+                "promiscuous_received_frame_count": obj.ullPromiscuousReceivedFrameCount,
+                "max_rx_lifetime_exceeded_count": obj.ullMaxRXLifetimeExceededCount,
+                "frame_duplicate_count": obj.ullFrameDuplicateCount,
+                "received_fragment_count": obj.ullReceivedFragmentCount,
+                "promiscuous_receieved_fragment_count": obj.ullPromiscuousReceivedFragmentCount,
+                "fcs_error_count": obj.ullFCSErrorCount
+            }
+            res.append(stats)
+        return res
+    
     def get_wlan_connection_attrs(self):
         res = {}
         conn_attrs = self._wlan_connection_attrs().contents
@@ -157,4 +205,16 @@ class WlanClient:
         info = self._wlan_radio_state().contents
         res["number_of_phys"] = info.dwNumberOfPhys
         res["phy_radio_state"] = self._get_wlan_phy_radio_state(info.PhyRadioState, res["number_of_phys"])
+        return res
+    
+    def  get_wlan_stats(self):
+        res = {}
+        info = self._wlan_stats().contents
+        res["four_way_handshake_fails"] = info.ullFourWayHandshakeFailures
+        res["tkip_counter_measures_invoked"] = info.ullTKIPCounterMeasuresInvoked
+        res["reserved"] = info.ullReserved
+        res["mac_ucast_counters"] = self._get_mac_frame_stats(info.MacUcastCounters)
+        res["mac_mcast_counters"] = self._get_mac_frame_stats(info.MacMcastCounters)
+        res["number_of_phys"] = info.dwNumberOfPhys
+        res["phy_counters"] = self._get_phy_frame_stats(info.PhyCounters, res["number_of_phys"])
         return res

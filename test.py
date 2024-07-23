@@ -1,14 +1,17 @@
 from wlan_client import WlanClient
+from pprint import pprint
 
 
 with WlanClient() as c:
     res = c.get_wlan_connection_attrs()
-    print(res)
-    # res = c.get_wlan_qos_info()
-    # print(res)
-    # print("\n\n")
-    # res = c.get_realtime_connection_quality()
-    # print(res)
+    pprint(res)
+    res = c.get_wlan_qos_info()
+    pprint(res)
+    print("\n\n")
+    res = c.get_realtime_connection_quality()
+    pprint(res)
     print("\n\n")
     res = c.get_wlan_radio_state()
-    print(res)
+    pprint(res)
+    print("\n\n")
+    pprint(c.get_wlan_stats())
