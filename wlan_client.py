@@ -51,6 +51,16 @@ class WlanClient:
         stats = self.client.WlanQueryInterface(k)
         return stats
     
+    def _wlan_channel_number(self):
+        k = "wlan_intf_opcode_channel_number"
+        chan = self.client.WlanQueryInterface(k)
+        return chan
+    
+    def _wlan_rssi(self):
+        k = "wlan_intf_opcode_rssi"
+        rssi = self.client.WlanQueryInterface(k)
+        return rssi
+    
     def _format_rate(self, num):
         d = str(num)[-3:]
         i = str(num)[:-3]
@@ -217,4 +227,12 @@ class WlanClient:
         res["mac_mcast_counters"] = self._get_mac_frame_stats(info.MacMcastCounters)
         res["number_of_phys"] = info.dwNumberOfPhys
         res["phy_counters"] = self._get_phy_frame_stats(info.PhyCounters, res["number_of_phys"])
+        return res
+    
+    def get_wlan_channel_number(self):
+        res = {}
+        chan = self._wlan_channel_number().contents
+        rssi = self._wlan_rssi().contents
+        res["channel_number"] = chan.value
+        res["rssi"] = rssi.value
         return res
