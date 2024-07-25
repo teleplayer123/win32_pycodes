@@ -549,7 +549,7 @@ class Win32_WlanApi:
             raise Exception("Error querying wlan interface")
         return data
 
-    def WlanIhvControl(self):
+    def WlanIhvControl(self, ihv_type, buffer, ):
         """
         DWORD WlanIhvControl(
             [in]                HANDLE                hClientHandle,
@@ -565,4 +565,5 @@ class Win32_WlanApi:
         func_ref = wlanapi.WlanIhvControl
         func_ref.argtypes = [HANDLE, GUID, WLAN_IHV_CONTROL_TYPE_T, DWORD, PVOID, DWORD, PVOID, ct.POINTER(DWORD)]
         func_ref.restype = DWORD
-        #TODO finish this function
+        ihv_ctrl = WLAN_IHV_CONTROL_TYPE[ihv_type]
+        buf_size = DWORD(ct.sizeof(buffer))
