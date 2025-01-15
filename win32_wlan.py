@@ -418,16 +418,7 @@ class WLAN_BSS_LIST(ct.Structure):
         ("dwTotalSize", DWORD),
         ("dwNumberOfItems", DWORD),
         ("wlanBssEntries", WLAN_BSS_ENTRY * 1)
-    ]
-
-class WLAN_CONNECTION_QOS_INFO(ct.Structure):
-    _fields_ = [
-        ("peerCapabilities", WLAN_QOS_CAPABILITIES),
-        ("bMSCSConfigured", BOOL),
-        ("bDSCPToUPMappingConfigured", BOOL),
-        ("ulNumConfiguredSCSStreams", ULONG),
-        ("ulNumConfiguredDSCPPolicies", ULONG)
-    ]
+    ]
 
 WLAN_INTF_OPCODE_TYPES = {
     "wlan_intf_opcode_autoconf_enabled": BOOL,
