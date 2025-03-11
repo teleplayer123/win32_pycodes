@@ -1,8 +1,15 @@
 from ctypes import *
 from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHORT, WORD
+from win32_utils import GUID
 
 
 btapi = windll.LoadLibrary("BluetoothApis.dll")
+hidapi = windll.hid
+
+def get_hid_guid():
+    hid_guid = GUID()
+    hidapi.HidD_GetHidGuid(byref(hid_guid))
+    return hid_guid
 
 BTH_ADDR = c_ulonglong
 BTADDR_BYTE = c_ubyte * 6
@@ -10,7 +17,6 @@ BTADDR_BYTE = c_ubyte * 6
 BLUETOOTH_MAX_NAME_SIZE = 248
 
 ERROR_SUCCESS = 0
-
 
 BLUETOOTH_AUTHENTICATION_METHOD = {
     0x00: "bluetooth_authentication_method_legacy",

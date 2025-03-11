@@ -37,6 +37,21 @@ class GUIDv1(ct.Structure):
             self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
         )
     
+class GUID(ct.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("Data1", DWORD),
+        ("Data2", WORD),
+        ("Data3", WORD),
+        ("Data4", CHAR * 8),
+    ]
+
+    def __str__(self):
+        return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
+            self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data4[2],
+            self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
+        )
+    
 AKM_FROM_TYPE = lambda p, a: p + (a << 24)
 CIPHER_FROM_TYPE = lambda p, c: p + (c << 24)
 RSNA_OUI_PREFIX = 0xac0f00
