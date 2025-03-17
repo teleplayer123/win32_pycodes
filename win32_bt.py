@@ -1,18 +1,48 @@
-from ctypes import *
+import ctypes as ct
 from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHORT, WORD
 from win32_utils import GUID
 
 
-btapi = windll.LoadLibrary("BluetoothApis.dll")
-hidapi = windll.hid
+# windows library for bluetooth
+btapi = ct.windll.LoadLibrary("BluetoothApis.dll")
+# windows library for HID devices
+hidapi = ct.windll.hid
+
+##### Windows HID API #####
+
+# Structs
+
+class HIDD_ATTRIBUTES(ct.Structure):
+
+    _fields_ = [
+        ("size", ULONG),
+        
+    ]
+
+
+# Functions
 
 def get_hid_guid():
     hid_guid = GUID()
-    hidapi.HidD_GetHidGuid(byref(hid_guid))
+    hidapi.HidD_GetHidGuid(ct.byref(hid_guid))
     return hid_guid
 
-BTH_ADDR = c_ulonglong
-BTADDR_BYTE = c_ubyte * 6
+def hid_get_attrs(h):
+    """
+    BOOLEAN HidD_GetAttributes(
+        [in]  HANDLE            HidDeviceObject,
+        [out] PHIDD_ATTRIBUTES  Attributes);
+    """
+    pass
+
+
+
+
+
+##### Windows Bluetooth API #####
+
+BTH_ADDR = ct.c_ulonglong
+BTADDR_BYTE = ct.c_ubyte * 6
 
 BLUETOOTH_MAX_NAME_SIZE = 248
 
@@ -26,7 +56,7 @@ BLUETOOTH_AUTHENTICATION_METHOD = {
     0x04: "bluetooth_authentication_method_passkey"
 }
 
-class SYSTEMTIME(Structure):
+class SYSTEMTIME(ct.Structure):
     _fields_ = [
         ("wYear", WORD),
         ("wMonth", WORD),
@@ -38,13 +68,13 @@ class SYSTEMTIME(Structure):
         ("wMilliseconds", WORD)
     ]
 
-class BLUETOOTH_ADDRESS(Union):
+class BLUETOOTH_ADDRESS(ct.Union):
     _fields_ = [
         ("ullLong", BTH_ADDR),
         ("rgBytes", BTADDR_BYTE)
     ]
 
-class BLUETOOTH_DEVICE_INFO(Structure):
+class BLUETOOTH_DEVICE_INFO(ct.Structure):
     _fields_ = [
         ("dwSize", DWORD),
         ("address", BLUETOOTH_ADDRESS),
@@ -55,12 +85,12 @@ class BLUETOOTH_DEVICE_INFO(Structure):
 
     ]
 
-class BLUETOOTH_FIND_RADIO_PARAMS(Structure):
+class BLUETOOTH_FIND_RADIO_PARAMS(ct.Structure):
     _fields_ = [
         ("dwSize", DWORD)
     ]
 
-class BLUETOOTH_DEVICE_SEARCH_PARAMS(Structure):
+class BLUETOOTH_DEVICE_SEARCH_PARAMS(ct.Structure):
     _fields_ = [
         ("dwSize", DWORD),
         ("fReturnAuthenticated", BOOL),
@@ -72,7 +102,7 @@ class BLUETOOTH_DEVICE_SEARCH_PARAMS(Structure):
         ("hRadio", HANDLE)
     ]
 
-class BLUETOOTH_RADIO_INFO(Structure):
+class BLUETOOTH_RADIO_INFO(ct.Structure):
     _fields_ = [
         ("dwSize", DWORD),
         ("address", BLUETOOTH_ADDRESS),
@@ -84,20 +114,20 @@ class BLUETOOTH_RADIO_INFO(Structure):
 
 def BluetoothGetRadioInfo(h_find):
     func_ref = btapi.BluetoothGetRadioInfo
-    func_ref.argtypes = [HANDLE, POINTER(BLUETOOTH_RADIO_INFO)]
+    func_ref.argtypes = [HANDLE, ct.POINTER(BLUETOOTH_RADIO_INFO)]
     func_ref.restype = DWORD
     btri = BLUETOOTH_RADIO_INFO()
-    dres = func_ref(h_find, byref(btri))
+    dres = func_ref(h_find, ct.byref(btri))
     print(f"BluetoothGetRadioInfo Result: {dres}")
     return btri
 
 
 def BluetoothGetDeviceInfo(h_dev):
     func_ref = btapi.BluetoothGetDeviceInfo
-    func_ref.argtypes = [HANDLE, POINTER(BLUETOOTH_DEVICE_INFO)]
+    func_ref.argtypes = [HANDLE, ct.POINTER(BLUETOOTH_DEVICE_INFO)]
     func_ref.restype = DWORD
     btdi = BLUETOOTH_DEVICE_INFO()
-    dres = func_ref(h_dev, byref(btdi))
+    dres = func_ref(h_dev, ct.byref(btdi))
     return btdi
 
 
@@ -109,11 +139,11 @@ def BluetoothFindFirstRadio():
         );
     """
     func_ref = btapi.BluetoothFindFirstRadio
-    func_ref.argtypes = [POINTER(BLUETOOTH_FIND_RADIO_PARAMS), POINTER(HANDLE)]
+    func_ref.argtypes = [ct.POINTER(BLUETOOTH_FIND_RADIO_PARAMS), ct.POINTER(HANDLE)]
     func_ref.restype = DWORD
     ph_radio = HANDLE()
     btfrp = BLUETOOTH_FIND_RADIO_PARAMS()
-    h_find = func_ref(byref(btfrp), byref(ph_radio))
+    h_find = func_ref(ct.byref(btfrp), ct.byref(ph_radio))
     return h_find, ph_radio
 
 
@@ -125,22 +155,22 @@ def BluetoothFindNextRadio(h_find):
         );
     """
     func_ref = btapi.BluetoothFindNextRadio
-    func_ref.argtypes = [HANDLE, POINTER(HANDLE)]
+    func_ref.argtypes = [HANDLE, ct.POINTER(HANDLE)]
     func_ref.restype = BOOL
     ph_radio = HANDLE()
-    bres = func_ref(h_find, byref(ph_radio))
+    bres = func_ref(h_find, ct.byref(ph_radio))
     print(f"Bool: {bres}")
     return ph_radio
 
 
 def BluetoothFindFirstDevice(h_find):
     func_ref = btapi.BluetoothFindFirstDevice
-    func_ref.argtypes = [POINTER(BLUETOOTH_DEVICE_SEARCH_PARAMS), POINTER(BLUETOOTH_DEVICE_INFO)]
+    func_ref.argtypes = [ct.POINTER(BLUETOOTH_DEVICE_SEARCH_PARAMS), ct.POINTER(BLUETOOTH_DEVICE_INFO)]
     func_ref.restype = HANDLE
     btdsp = BLUETOOTH_DEVICE_SEARCH_PARAMS()
-    btdsp.dwSize = sizeof(btdsp)
+    btdsp.dwSize = ct.sizeof(btdsp)
     btdi = BLUETOOTH_DEVICE_INFO()
-    h_dev = func_ref(byref(btdsp), byref(btdi))
+    h_dev = func_ref(ct.byref(btdsp), ct.byref(btdi))
     return h_dev
 
 
