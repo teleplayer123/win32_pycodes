@@ -6,6 +6,8 @@ from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHOR
 btapi = ct.windll.LoadLibrary("BluetoothApis.dll")
 # windows library for HID devices
 hidapi = ct.windll.hid
+# setup library for device handle 
+setupapi = ct.windll.setupapi
 
 class GUID(ct.Structure):
     _pack_ = 1
@@ -21,8 +23,10 @@ class GUID(ct.Structure):
             self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data4[2],
             self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
         )
+    
+# Call SetupDiGetClassDevs to get handle and SetupDiDestroyDeviceInfoList to close handle
 
-##### Windows HID API #####
+# Windows HID API
 
 DEVICE_GUIDS = {
     "keyboard": "{884b96c3-56ef-11d1-bc8c-00a0c91405dd}",
