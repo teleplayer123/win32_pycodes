@@ -61,6 +61,28 @@ HID_USAGE_ID = {
     "multi_axis_controller": 0x08
 }
 
+USAGE_TYPE = ct.c_uint16
+
+class HIDP_CAPS(ct.Structure):
+    _fields_ = [
+        ("usage", USAGE_TYPE),
+        ("usage_page", USAGE_TYPE),
+        ("input_report_byte_length", USHORT),
+        ("output_report_byte_length", USHORT),
+        ("feature_report_byte_length", USHORT),
+        ("reserved", USHORT * 17),
+        ("number_link_collection_nodes", USHORT),
+        ("number_input_button_caps", USHORT),
+        ("number_input_value_caps", USHORT),
+        ("number_input_data_indices", USHORT),
+        ("number_output_button_caps", USHORT),
+        ("number_output_value_caps", USHORT),
+        ("number_output_data_indices", USHORT),
+        ("number_feature_button_caps", USHORT),
+        ("number_feature_value_caps", USHORT),
+        ("number_feature_data_indices", USHORT)
+    ]
+
 class HIDD_ATTRIBUTES(ct.Structure):
     _fields_ = [
         ("size", ULONG),
