@@ -43,7 +43,7 @@ class GUID(ct.Structure):
         ("Data1", DWORD),
         ("Data2", WORD),
         ("Data3", WORD),
-        ("Data4", CHAR * 8),
+        ("Data4", BYTE * 8),
     ]
 
     def __str__(self):

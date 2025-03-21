@@ -4,7 +4,7 @@ from win32_utils import GUIDv1, GUIDv2, DOT11_MAC_ADDRESSv1, DOT11_MAC_ADDRESSv2
 
 
 wlanapi = ct.windll.LoadLibrary("wlanapi.dll")
-WINVER = "23H2" #"24H2"
+WINVER = "24H2"
 ERROR_SUCCESS = 0
 WLAN_MAX_NAME_LENGTH = 256
 DOT11_SSID_MAX_LENGTH = 32
@@ -418,7 +418,8 @@ class WLAN_BSS_LIST(ct.Structure):
         ("dwTotalSize", DWORD),
         ("dwNumberOfItems", DWORD),
         ("wlanBssEntries", WLAN_BSS_ENTRY * 1)
-    ]
+    ]
+
 
 WLAN_INTF_OPCODE_TYPES = {
     "wlan_intf_opcode_autoconf_enabled": BOOL,

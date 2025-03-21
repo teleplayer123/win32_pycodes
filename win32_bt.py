@@ -1,6 +1,5 @@
 import ctypes as ct
 from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHORT, WORD
-from win32_utils import GUID
 
 
 # windows library for bluetooth
@@ -8,9 +7,26 @@ btapi = ct.windll.LoadLibrary("BluetoothApis.dll")
 # windows library for HID devices
 hidapi = ct.windll.hid
 
+class GUID(ct.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("Data1", DWORD),
+        ("Data2", WORD),
+        ("Data3", WORD),
+        ("Data4", BYTE * 8),
+    ]
+
+    def __str__(self):
+        return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
+            self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data4[2],
+            self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
+        )
+
 ##### Windows HID API #####
 
 # Structs
+
+
 
 class HIDD_ATTRIBUTES(ct.Structure):
 
@@ -181,7 +197,8 @@ def main():
     print(f"phRadio Handle: {ph_radio}")
     r_info = BluetoothGetRadioInfo(h_find)
     print(f"RadioInfo Address: {r_info.address.rgBytes[:]}")
-    
+    guid = get_hid_guid()
+    print(str(guid))
 
 
 
