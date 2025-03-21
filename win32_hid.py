@@ -1,41 +1,65 @@
 import ctypes as ct
-from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHORT, WORD
+from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHORT, WORD, LPCWSTR
+from win32_utils import GUID
 
 
-# windows library for HID devices
+# dll references
 hidapi = ct.windll.hid
-# setup library for device handle and destruct
 setupapi = ct.windll.setupapi
+kernel32 = ct.windll.kernel32
+
+#kernel32 function references
+read_file = kernel32.ReadFile
 
 
+###### setup api ######
 
-# Call SetupDiGetClassDevsW to get handle and SetupDiDestroyDeviceInfoList to close handle
+DIGCF_VALUES = {
+    "default": 0x00000001,
+    "present": 0x00000002,
+    "all_classes": 0x00000004,
+    "profile": 0x00000008,
+    "device_interface": 0x00000010
+}
+DIGCF_TYPE = DWORD
 
-# Windows HID API
+# Call SetupDiGetClassDevsW to get handle by device guid
+"""
+WINSETUPAPI HDEVINFO SetupDiGetClassDevsW(
+  [in, optional] const GUID *ClassGuid,
+  [in, optional] PCWSTR     Enumerator,
+  [in, optional] HWND       hwndParent,
+  [in]           DWORD      Flags
+);
+"""
+get_dev_handle = setupapi.SetupDiGetClassDevsW
+get_dev_handle.restype = HANDLE
+get_dev_handle.argtypes = [
+    ct.POINTER(GUID),
+    LPCWSTR,
+    HANDLE,
+    DIGCF_TYPE
+]
 
-DEVICE_GUIDS = {
-    "keyboard": "{884b96c3-56ef-11d1-bc8c-00a0c91405dd}",
-    "mouse": "{378DE44C-56EF-11D1-BC8C-00A0C91405DD}",
-    "net": "{CAC88484-7515-4C03-82E6-71A87ABAC361}",
-    
+
+###### hid api ######
+
+HID_USAGE_PAGE = {
+    "generic": 0x01,
+    "game": 0x05,
+    "leds": 0x08,
+    "button": 0x09
 }
 
-class GUID(ct.Structure):
-    _pack_ = 1
-    _fields_ = [
-        ("Data1", DWORD),
-        ("Data2", WORD),
-        ("Data3", WORD),
-        ("Data4", BYTE * 8),
-    ]
-
-    def __str__(self):
-        return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
-            self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], self.Data4[2],
-            self.Data4[3], self.Data4[4], self.Data4[5], self.Data4[6], self.Data4[7]
-        )
-
-# Structs
+HID_USAGE_ID = {
+    "pointer": 0x01,
+    "mouse": 0x02,
+    "joystick": 0x04,
+    "game_pad": 0x05,
+    "keyboard": 0x06,
+    "keypad": 0x07,
+    "multi_axis_controller": 0x08
+}
 
 class HIDD_ATTRIBUTES(ct.Structure):
     _fields_ = [
@@ -44,8 +68,6 @@ class HIDD_ATTRIBUTES(ct.Structure):
         ("product_id", USHORT),
         ("version_number", USHORT)
     ]
-
-# Functions
 
 def get_hid_guid():
     """ 
