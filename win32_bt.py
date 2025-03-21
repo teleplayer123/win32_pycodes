@@ -6,7 +6,7 @@ from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHOR
 btapi = ct.windll.LoadLibrary("BluetoothApis.dll")
 # windows library for HID devices
 hidapi = ct.windll.hid
-# setup library for device handle 
+# setup library for device handle and destruct
 setupapi = ct.windll.setupapi
 
 class GUID(ct.Structure):
