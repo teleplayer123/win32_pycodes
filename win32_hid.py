@@ -3,6 +3,8 @@ from ctypes.wintypes import DWORD, HANDLE, BOOL, CHAR, BYTE, WCHAR, ULONG, USHOR
 from win32_utils import GUID
 
 
+PVOID = ct.c_void_p
+
 # dll references
 hidapi = ct.windll.hid
 setupapi = ct.windll.setupapi
@@ -81,6 +83,20 @@ class HIDP_CAPS(ct.Structure):
         ("number_feature_button_caps", USHORT),
         ("number_feature_value_caps", USHORT),
         ("number_feature_data_indices", USHORT)
+    ]
+
+class HIDP_LINK_COLLECTION_NODE(ct.Structure):
+    _fields_ = [
+        ("link_usage", USAGE_TYPE),
+        ("link_usage_page", USAGE_TYPE),
+        ("parent", USHORT),
+        ("number_of_children", USHORT),
+        ("next_sibling", USHORT),
+        ("first_child", USHORT),
+        ("collection_type", ULONG),
+        ("is_alias", ULONG),
+        ("reserved", ULONG),
+        ("user_context", PVOID)
     ]
 
 class HIDD_ATTRIBUTES(ct.Structure):
