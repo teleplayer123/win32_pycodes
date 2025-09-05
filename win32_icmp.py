@@ -52,15 +52,6 @@ def send_ping_windows(host):
     if ret == 0:
         return None, "Request timed out."
 
-    # Parse the reply buffer
-    # The reply structure is IcmpEchoReply
-    # Here, we're doing a simplified parsing based on common reply sizes
-    # A more robust solution would define the IcmpEchoReply structure
-    # and use ctypes.Structure.
-    # The first 8 bytes of the reply buffer are part of the ICMP header
-    # and a status field.
-    # We'll just check if a reply was received.
-    
     # Simple check for a valid reply
     reply_header_size = struct.calcsize("L") # Assuming a 4-byte status field is at the start
     if ctypes.cast(ctypes.byref(reply_buffer), ctypes.POINTER(ctypes.c_long))[0] != 0:
